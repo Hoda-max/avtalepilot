@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AvtalePilot — App Overview & Progress</title>
+  <style>
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      color: #1f2937;
+      line-height: 1.55;
+      font-size: 11pt;
+      margin: 0;
+      padding: 24px;
+      background: #fff;
+    }
+    .cover {
+      border-left: 6px solid #0f766e;
+      padding: 6px 0 6px 18px;
+      margin-bottom: 24px;
+    }
+    .eyebrow {
+      color: #0f766e;
+      font-size: 10pt;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+    h1 {
+      font-size: 26pt;
+      margin: 0 0 8px;
+      color: #111827;
+    }
+    .overview {
+      font-size: 12pt;
+      color: #4b5563;
+      max-width: 640px;
+      margin: 0;
+    }
+    h2 {
+      font-size: 14pt;
+      color: #0f766e;
+      margin: 26px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #ccfbf1;
+    }
+    h3 {
+      font-size: 12pt;
+      color: #134e4a;
+      margin: 16px 0 8px;
+    }
+    p { margin: 0 0 10px; }
+    ul, ol { margin: 0 0 12px; padding-left: 22px; }
+    li { margin-bottom: 5px; }
+    strong { color: #111827; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px;
+      font-size: 10.5pt;
+    }
+    thead th {
+      background: #0f766e;
+      color: #fff;
+      text-align: left;
+      padding: 10px 12px;
+    }
+    tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
+    }
+    tbody tr:nth-child(even) td { background: #f0fdfa; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #fff;
+      page-break-inside: avoid;
+    }
+    .card.done {
+      border-color: #99f6e4;
+      background: #f0fdfa;
+    }
+    .card h3 { margin-top: 0; }
+    .badge {
+      display: inline-block;
+      background: #0f766e;
+      color: #fff;
+      font-size: 9pt;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-right: 6px;
+    }
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      margin: 14px 0;
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+    }
+    .box {
+      background: #fff;
+      border: 2px solid #0f766e;
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-align: center;
+      min-width: 110px;
+    }
+    .box.main {
+      background: #0f766e;
+      color: #fff;
+    }
+    .arrow { color: #0f766e; font-size: 18pt; font-weight: 700; }
+    .success {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 8px;
+    }
+    .footer {
+      margin-top: 28px;
+      padding-top: 10px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 9pt;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <p class="eyebrow">Project status report</p>
+    <h1>AvtalePilot</h1>
+    <p class="overview">
+      What the app is, what has been built so far, and how to run it.
+      Prepared for Hoda — November 2026.
+    </p>
+  </header>
+
+  <h2>1. What is AvtalePilot?</h2>
+  <p>
+    <strong>AvtalePilot is a contract and deadline management app for organizations.</strong>
+    It gives a company one place to store contracts, see who is responsible,
+    track important dates, and record decisions before deadlines pass.
+  </p>
+  <p>It helps answer four everyday questions:</p>
+  <ol>
+    <li>Where is the contract?</li>
+    <li>When must someone act?</li>
+    <li>Who is responsible?</li>
+    <li>What decision was made?</li>
+  </ol>
+  <p>
+    <strong>Short description:</strong>
+    AvtalePilot helps organizations keep contracts, responsibilities, and deadlines under control in one place.
+  </p>
+
+  <h2>2. Who it is for</h2>
+  <p>
+    Businesses, municipalities, nonprofits, and other organizations — for example
+    construction firms, IT companies, and property companies that need to track
+    agreements, leases, and subscriptions.
+  </p>
+
+  <h2>3. Tech stack (beginner-friendly)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Next.js + TypeScript + Tailwind</td>
+        <td>Web app (screens and logic)</td>
+      </tr>
+      <tr>
+        <td>Supabase</td>
+        <td>Login, database, file storage</td>
+      </tr>
+      <tr>
+        <td>Vercel (ready)</td>
+        <td>Optional online hosting</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="flow">
+    <div class="box"><strong>Browser</strong><br /><span style="font-size:9pt;">You use the app</span></div>
+    <div class="arrow">→</div>
+    <div class="box main"><strong>Next.js app</strong><br /><span style="font-size:9pt;">Built in Cursor</span></div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>Supabase</strong><br /><span style="font-size:9pt;">Auth + data + files</span></div>
+  </div>
+
+  <h2>4. What has been done so far</h2>
+  <div class="grid">
+    <div class="card done">
+      <h3><span class="badge">0</span> Project setup</h3>
+      <ul>
+        <li>Next.js app created</li>
+        <li>Supabase connected</li>
+        <li>Login / create account</li>
+        <li>Protected dashboard</li>
+      </ul>
+    </div>
+    <div class="card done">
+      <h3><span class="badge">1</span> Organization</h3>
+      <ul>
+        <li>One organization (ready for many later)</li>
+        <li>User profiles</li>
+        <li>Admin / member roles</li>
+        <li>Settings page</li>
+      </ul>
+    </div>
+    <div class="card done">
+      <h3><span class="badge">2</span> Contracts library</h3>
+      <ul>
+        <li>Suppliers</li>
+        <li>Contracts create / edit / delete</li>
+        <li>Search and filters</li>
+        <li>PDF / image upload</li>
+      </ul>
+    </div>
+    <div class="card done">
+      <h3><span class="badge">3</span> Dates &amp; decisions</h3>
+      <ul>
+        <li>Renewal / expiry / notice dates</li>
+        <li>Reminders (90 / 30 / 7 days)</li>
+        <li>Renew / renegotiate / end</li>
+        <li>Dashboard attention list</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card done" style="margin-top:4px;">
+    <h3><span class="badge">4</span> Polish &amp; extras</h3>
+    <ul>
+      <li>Better validation and empty states</li>
+      <li>Sample demo data SQL</li>
+      <li>Clear README</li>
+      <li>Language switcher: <strong>Norsk</strong>, <strong>English</strong>, <strong>العربية</strong> (Arabic uses right-to-left layout)</li>
+      <li>Ready to deploy to Vercel</li>
+    </ul>
+  </div>
+
+  <h2>5. Main screens in the app</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Screen</th>
+        <th>What you can do</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Login</td>
+        <td>Sign in or create an account</td>
+      </tr>
+      <tr>
+        <td>Dashboard (Oversikt)</td>
+        <td>See counts, open reminders, upcoming deadlines</td>
+      </tr>
+      <tr>
+        <td>Contracts (Avtaler)</td>
+        <td>List, search, filter, open, create contracts</td>
+      </tr>
+      <tr>
+        <td>Contract detail</td>
+        <td>Edit details, upload file, add dates, record decisions</td>
+      </tr>
+      <tr>
+        <td>Suppliers (Leverandører)</td>
+        <td>Manage suppliers linked to contracts</td>
+      </tr>
+      <tr>
+        <td>Settings</td>
+        <td>Change name, organization name, and language</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>6. Important concepts</h2>
+  <ul>
+    <li><strong>Ansvarlig / Owner:</strong> the person responsible for a contract (must be a user in the organization).</li>
+    <li><strong>Key dates:</strong> notice, renewal, and expiry — reminders are created automatically.</li>
+    <li><strong>Decision:</strong> renew, renegotiate, or end — saved in history.</li>
+    <li><strong>organization_id:</strong> every record belongs to an organization (MVP uses one; multi-org can come later).</li>
+  </ul>
+
+  <h2>7. How to run the app</h2>
+  <ol>
+    <li>Open the project folder: <code>Desktop\Avtalepilot</code></li>
+    <li>Make sure <code>.env.local</code> has Supabase URL + anon key</li>
+    <li>Run <code>npm run dev</code></li>
+    <li>Open <strong>http://localhost:3000</strong></li>
+  </ol>
+  <p>
+    Database setup SQL files are in <code>supabase/migrations</code>.
+    Optional demo data is in <code>supabase/seed/001_sample_data.sql</code>.
+  </p>
+
+  <h2>8. Current status</h2>
+  <div class="success">
+    The practical MVP is working locally: login, one organization, suppliers,
+    contracts with documents, dates, reminders, decisions, dashboard, and
+    three interface languages. Next optional step: deploy online with Vercel.
+  </div>
+
+  <p class="footer">
+    AvtalePilot — status overview · built with Cursor · November 2026
+  </p>
+</body>
+</html>

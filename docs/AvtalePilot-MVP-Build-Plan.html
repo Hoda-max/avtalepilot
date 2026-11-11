@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AvtalePilot MVP Build Plan</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      color: #1f2937;
+      line-height: 1.55;
+      font-size: 11pt;
+      margin: 0;
+      padding: 24px;
+      background: #fff;
+    }
+    .cover {
+      border-left: 6px solid #0f766e;
+      padding: 8px 0 8px 18px;
+      margin-bottom: 28px;
+    }
+    .eyebrow {
+      color: #0f766e;
+      font-size: 10pt;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+    h1 {
+      font-size: 26pt;
+      line-height: 1.15;
+      margin: 0 0 10px;
+      color: #111827;
+      font-weight: 700;
+    }
+    .overview {
+      font-size: 12pt;
+      color: #4b5563;
+      max-width: 620px;
+      margin: 0;
+    }
+    h2 {
+      font-size: 14pt;
+      color: #0f766e;
+      margin: 28px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #ccfbf1;
+    }
+    h3 {
+      font-size: 12pt;
+      color: #134e4a;
+      margin: 18px 0 8px;
+    }
+    p { margin: 0 0 10px; }
+    ul, ol { margin: 0 0 12px; padding-left: 22px; }
+    li { margin-bottom: 5px; }
+    strong { color: #111827; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px;
+      font-size: 10.5pt;
+    }
+    thead th {
+      background: #0f766e;
+      color: #fff;
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 600;
+    }
+    tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
+    }
+    tbody tr:nth-child(even) td {
+      background: #f0fdfa;
+    }
+    tbody tr:last-child td {
+      border-bottom: 2px solid #99f6e4;
+    }
+    td:first-child {
+      font-weight: 600;
+      white-space: nowrap;
+      color: #134e4a;
+      width: 22%;
+    }
+
+    .diagram {
+      margin: 16px 0 8px;
+      padding: 18px 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+    }
+    .diagram-title {
+      font-size: 10pt;
+      font-weight: 600;
+      color: #64748b;
+      margin: 0 0 14px;
+      text-align: center;
+    }
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .box {
+      background: #fff;
+      border: 2px solid #0f766e;
+      border-radius: 10px;
+      padding: 12px 14px;
+      min-width: 120px;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(15, 118, 110, 0.08);
+    }
+    .box.main {
+      background: #0f766e;
+      color: #fff;
+      border-color: #0f766e;
+    }
+    .box .label {
+      font-weight: 700;
+      font-size: 11pt;
+      display: block;
+    }
+    .box .sub {
+      display: block;
+      font-size: 9pt;
+      opacity: 0.85;
+      margin-top: 3px;
+    }
+    .arrow {
+      color: #0f766e;
+      font-size: 18pt;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .note {
+      text-align: center;
+      font-size: 10pt;
+      color: #64748b;
+      margin: 10px 0 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 12px 0 8px;
+    }
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+    .card.in {
+      border-color: #99f6e4;
+      background: #f0fdfa;
+    }
+    .card.out {
+      border-color: #e5e7eb;
+      background: #f9fafb;
+    }
+    .card h3 {
+      margin-top: 0;
+      font-size: 11pt;
+    }
+    .card ul { margin-bottom: 0; }
+
+    .screens {
+      columns: 2;
+      column-gap: 24px;
+      margin: 8px 0 12px;
+    }
+    .screens li { break-inside: avoid; }
+
+    .phase {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 0 0 10px;
+      page-break-inside: avoid;
+    }
+    .phase-num {
+      display: inline-block;
+      background: #0f766e;
+      color: #fff;
+      font-size: 9pt;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .phase h3 {
+      display: inline;
+      margin: 0;
+      vertical-align: middle;
+    }
+    .phase ul { margin: 8px 0 0; }
+
+    .success {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 8px;
+    }
+
+    .footer {
+      margin-top: 28px;
+      padding-top: 10px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 9pt;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <p class="eyebrow">Project build plan</p>
+    <h1>AvtalePilot MVP</h1>
+    <p class="overview">
+      A beginner-friendly web app for one organization first, built so multiple
+      organizations can be added later without rewriting the core.
+    </p>
+  </header>
+
+  <h2>1. Simple tech stack</h2>
+  <p>These tools work well together and are easy to learn with Cursor’s help.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>What it is</th>
+        <th>Why it helps you</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Next.js</td>
+        <td>Website framework (React)</td>
+        <td>One project for pages and server logic; many tutorials</td>
+      </tr>
+      <tr>
+        <td>TypeScript</td>
+        <td>JavaScript with types</td>
+        <td>Catches mistakes early; Cursor can help more accurately</td>
+      </tr>
+      <tr>
+        <td>Tailwind CSS</td>
+        <td>Styling with utility classes</td>
+        <td>Fast UI without deep CSS knowledge</td>
+      </tr>
+      <tr>
+        <td>Supabase</td>
+        <td>Database + login + file storage</td>
+        <td>Visual dashboard; no separate backend server to run</td>
+      </tr>
+      <tr>
+        <td>Vercel (later)</td>
+        <td>Hosting</td>
+        <td>Simple deploy from the same Next.js app</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="diagram">
+    <p class="diagram-title">How the pieces fit together</p>
+    <div class="flow">
+      <div class="box">
+        <span class="label">Browser</span>
+        <span class="sub">You use the app</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box main">
+        <span class="label">Next.js app</span>
+        <span class="sub">Built in Cursor</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="stack">
+        <div class="box">
+          <span class="label">Supabase Auth</span>
+          <span class="sub">Login</span>
+        </div>
+        <div class="box">
+          <span class="label">Supabase Database</span>
+          <span class="sub">Contracts &amp; dates</span>
+        </div>
+        <div class="box">
+          <span class="label">Supabase Storage</span>
+          <span class="sub">PDF files</span>
+        </div>
+      </div>
+    </div>
+    <p class="note">You edit the Next.js app. Supabase stores users, contracts, and uploaded PDFs.</p>
+  </div>
+
+  <h2>2. Product scope for MVP</h2>
+  <div class="two-col">
+    <div class="card in">
+      <h3>In scope (first version)</h3>
+      <ul>
+        <li>Sign in for staff of <strong>one</strong> organization</li>
+        <li>Contract library: create, edit, view, search/filter</li>
+        <li>Fields: title, supplier, cost, owner, department/location, status, notes</li>
+        <li>Key dates: renewal, expiry, notice deadline</li>
+        <li>Upload and view the original contract file</li>
+        <li>Reminders/tasks for upcoming deadlines</li>
+        <li>Decision record: Renew / Renegotiate / End</li>
+        <li>Simple overview of upcoming deadlines</li>
+      </ul>
+    </div>
+    <div class="card out">
+      <h3>Later (not in MVP)</h3>
+      <ul>
+        <li>AI extraction from PDFs</li>
+        <li>Email and calendar sync</li>
+        <li>Cost forecasting dashboards</li>
+        <li>Full multi-company signup and billing</li>
+        <li>Complex permission systems beyond Admin / Member</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>3. Ready for many organizations later</h2>
+  <p>From day one, every business table includes <strong>organization_id</strong>.</p>
+  <ul>
+    <li>MVP creates <strong>one</strong> organization and attaches all users to it</li>
+    <li>Queries always filter by the signed-in user’s organization</li>
+    <li>Supabase security rules (RLS) enforce that boundary</li>
+    <li>Later: add “create organization / invite users” without redesigning contracts</li>
+  </ul>
+
+  <h2>4. Data model (core tables)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Table</th>
+        <th>What it stores</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>organizations</td>
+        <td>Company id and name</td>
+      </tr>
+      <tr>
+        <td>profiles</td>
+        <td>User, organization, name, role (admin or member)</td>
+      </tr>
+      <tr>
+        <td>suppliers</td>
+        <td>Supplier name and contact info per organization</td>
+      </tr>
+      <tr>
+        <td>contracts</td>
+        <td>Title, supplier, owner, location, cost, status, notes, document</td>
+      </tr>
+      <tr>
+        <td>contract_dates</td>
+        <td>Renewal, expiry, or notice date for each contract</td>
+      </tr>
+      <tr>
+        <td>reminders</td>
+        <td>Due date, assignee, and status (pending / done / dismissed)</td>
+      </tr>
+      <tr>
+        <td>decisions</td>
+        <td>Renew, renegotiate, or end — who decided and when</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>This answers four everyday questions: Where is the contract? When must someone act? Who is responsible? What decision was made?</p>
+
+  <h2>5. App screens</h2>
+  <ol class="screens">
+    <li><strong>Login</strong></li>
+    <li><strong>Dashboard</strong> — upcoming deadlines and open reminders</li>
+    <li><strong>Contracts list</strong> — search and filters</li>
+    <li><strong>Contract detail</strong> — dates, file, reminders, decisions</li>
+    <li><strong>New / edit contract</strong> — including file upload</li>
+    <li><strong>Suppliers list</strong> — simple directory</li>
+    <li><strong>Settings</strong> — org name (admin); invites later</li>
+  </ol>
+  <p>UI language: <strong>Norwegian</strong> for users; code and technical names in English.</p>
+
+  <h2>6. Build phases</h2>
+
+  <div class="phase">
+    <span class="phase-num">0</span>
+    <h3>Project setup</h3>
+    <ul>
+      <li>Create Next.js + TypeScript + Tailwind in the Avtalepilot folder</li>
+      <li>Create a Supabase project and connect environment variables</li>
+      <li>Add login helpers and a protected app layout</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <span class="phase-num">1</span>
+    <h3>Auth + single organization</h3>
+    <ul>
+      <li>Email/password sign-in</li>
+      <li>Organizations and profiles with security rules</li>
+      <li>Seed one organization; first user as admin</li>
+      <li>Send guests to the login page</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <span class="phase-num">2</span>
+    <h3>Contract library + suppliers</h3>
+    <ul>
+      <li>Create, read, update, delete for suppliers and contracts</li>
+      <li>Store PDFs in Supabase Storage</li>
+      <li>List and detail pages with search and filters</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <span class="phase-num">3</span>
+    <h3>Dates, reminders, decisions</h3>
+    <ul>
+      <li>Multiple date types per contract</li>
+      <li>Reminders ahead of notice / renewal / expiry (for example 90 / 30 / 7 days)</li>
+      <li>Record Renew / Renegotiate / End with history</li>
+      <li>Dashboard of items that need attention</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <span class="phase-num">4</span>
+    <h3>Polish and deploy</h3>
+    <ul>
+      <li>Empty states, validation, clear error messages</li>
+      <li>A few sample contracts for demos</li>
+      <li>Deploy to Vercel and write a short README</li>
+    </ul>
+  </div>
+
+  <h2>7. How you will work in Cursor</h2>
+  <ol>
+    <li>Approve this plan</li>
+    <li>Implement <strong>one phase at a time</strong></li>
+    <li>After each phase, click through the app and give feedback</li>
+    <li>Wait on AI extraction and multi-company signup until the single-org MVP feels solid</li>
+  </ol>
+
+  <h2>8. Success criteria</h2>
+  <div class="success">
+    An organization user can add a contract with a file and key dates, see who owns it,
+    get reminded before a deadline, record renew / renegotiate / end, and find that
+    history later — all inside one organization, with the database ready for more
+    organizations later.
+  </div>
+
+  <p class="footer">AvtalePilot MVP Build Plan · for use in Cursor · beginner-friendly stack</p>
+</body>
+</html>
