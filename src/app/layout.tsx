@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     "Keep contracts, ownership, and deadlines under control in one place.",
 };
 
+// Locale comes from a cookie, so this layout cannot ship a fully static shell.
+export const instant = false;
+
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   const direction = isRtlLocale(locale) ? "rtl" : "ltr";

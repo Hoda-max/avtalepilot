@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendDueReminderEmails } from "@/lib/reminders/send-due-emails";
 
-export const dynamic = "force-dynamic";
-
 function isAuthorized(request: Request) {
   const cronSecret =
     process.env.CRON_SECRET ?? process.env.REMINDER_CRON_SECRET;
