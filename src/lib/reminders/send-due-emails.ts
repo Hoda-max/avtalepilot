@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { rollForwardRecurringDates } from "@/lib/reminders/sync-reminders";
 import { createClient } from "@/lib/supabase/server";
 import type { ContractDateType } from "@/lib/types";
 
@@ -186,6 +187,13 @@ export async function sendDueReminderEmails(options?: {
     }
   }
 
+  const rolled = await rollForwardRecurringDates(supabase, {
+    organizationId: options?.organizationId,
+  });
+  if (rolled.advanced) {
+    details.push(`Advanced ${rolled.advanced} recurring date(s).`);
+  }
+
   return {
     ok: failed === 0,
     scanned: reminders.length,
@@ -194,7 +202,9 @@ export async function sendDueReminderEmails(options?: {
     failed,
     message:
       reminders.length === 0
-        ? "No due reminders waiting for email."
+        ? rolled.advanced
+          ? `No due reminder emails. Advanced ${rolled.advanced} recurring date(s).`
+          : "No due reminders waiting for email."
         : `Scanned ${reminders.length}: sent ${sent}, skipped ${skipped}, failed ${failed}.`,
     details,
   };

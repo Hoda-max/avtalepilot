@@ -4,6 +4,7 @@ import { requireProfile } from "@/lib/auth/profile";
 import { updateReminderStatus } from "@/app/contracts/date-actions";
 import { formatDateNb } from "@/lib/dates";
 import { fillTemplate, getDictionary } from "@/i18n/get-dictionary";
+import { rollForwardRecurringDates } from "@/lib/reminders/sync-reminders";
 import { createClient } from "@/lib/supabase/server";
 import type {
   ContractDate,
@@ -21,6 +22,11 @@ export default async function DashboardPage() {
   const { locale, dictionary } = await getDictionary();
   const { user, profile } = await requireProfile();
   const supabase = await createClient();
+
+  await rollForwardRecurringDates(supabase, {
+    organizationId: profile.organization_id,
+  });
+
   const today = new Date().toISOString().slice(0, 10);
   const horizon = new Date();
   horizon.setUTCDate(horizon.getUTCDate() + 90);

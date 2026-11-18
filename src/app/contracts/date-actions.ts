@@ -2,56 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { requireProfile } from "@/lib/auth/profile";
-import { REMINDER_LEAD_DAYS, addDaysIso, todayIso } from "@/lib/dates";
+import { isDateRecurrence } from "@/lib/dates";
+import { syncRemindersForDate } from "@/lib/reminders/sync-reminders";
 import { createClient } from "@/lib/supabase/server";
-import type { ContractDateType, DecisionType, ReminderStatus } from "@/lib/types";
+import type {
+  ContractDateType,
+  DateRecurrence,
+  DecisionType,
+  ReminderStatus,
+} from "@/lib/types";
 
 export type DateActionState = {
   error?: string;
   message?: string;
 };
-
-async function syncRemindersForDate(options: {
-  organizationId: string;
-  contractId: string;
-  contractDateId: string;
-  dueDate: string;
-  assigneeUserId: string | null;
-}) {
-  const supabase = await createClient();
-  const today = todayIso();
-
-  // Remove old pending reminders for this date, then recreate upcoming ones.
-  await supabase
-    .from("reminders")
-    .delete()
-    .eq("contract_date_id", options.contractDateId)
-    .eq("status", "pending");
-
-  const rows = REMINDER_LEAD_DAYS.map((leadDays) => {
-    const reminderDue = addDaysIso(options.dueDate, -leadDays);
-    return {
-      organization_id: options.organizationId,
-      contract_id: options.contractId,
-      contract_date_id: options.contractDateId,
-      assignee_user_id: options.assigneeUserId,
-      due_date: reminderDue,
-      lead_days: leadDays,
-      status: "pending" as const,
-    };
-  }).filter((row) => row.due_date <= options.dueDate);
-
-  // Keep reminders that are still useful (due date not long past the event).
-  const useful = rows.filter((row) => row.due_date >= addDaysIso(today, -7));
-
-  if (useful.length === 0) {
-    return;
-  }
-
-  await supabase.from("reminders").upsert(useful, {
-    onConflict: "contract_date_id,lead_days",
-  });
-}
 
 export async function upsertContractDate(
   _prevState: DateActionState,
@@ -61,6 +25,10 @@ export async function upsertContractDate(
   const contractId = String(formData.get("contract_id") ?? "");
   const dateType = String(formData.get("date_type") ?? "") as ContractDateType;
   const dueDate = String(formData.get("due_date") ?? "").trim();
+  const recurrenceRaw = String(formData.get("recurrence") ?? "one_time").trim();
+  const recurrence: DateRecurrence = isDateRecurrence(recurrenceRaw)
+    ? recurrenceRaw
+    : "one_time";
 
   if (!contractId || !dueDate) {
     return { error: "Velg type og dato." };
@@ -90,21 +58,23 @@ export async function upsertContractDate(
         contract_id: contractId,
         date_type: dateType,
         due_date: dueDate,
+        recurrence,
       },
       { onConflict: "contract_id,date_type" },
     )
-    .select("id, due_date")
+    .select("id, due_date, recurrence")
     .single();
 
   if (error || !saved) {
     return { error: `Kunne ikke lagre dato: ${error?.message}` };
   }
 
-  await syncRemindersForDate({
+  await syncRemindersForDate(supabase, {
     organizationId: profile.organization_id,
     contractId,
     contractDateId: saved.id,
     dueDate: saved.due_date,
+    recurrence: (saved.recurrence as DateRecurrence) ?? recurrence,
     assigneeUserId: contract.owner_user_id,
   });
 

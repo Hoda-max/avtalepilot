@@ -54,16 +54,26 @@ export type ContractWithRelations = Contract & {
 
 export type ContractDateType = "renewal" | "expiry" | "notice";
 
+export type DateRecurrence =
+  | "one_time"
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "yearly";
+
 export type ContractDate = {
   id: string;
   organization_id: string;
   contract_id: string;
   date_type: ContractDateType;
   due_date: string;
+  recurrence?: DateRecurrence;
   created_at: string;
 };
 
 export type ReminderStatus = "pending" | "done" | "dismissed";
+
+export type ReminderLeadDays = 0 | 1 | 7 | 30 | 90;
 
 export type Reminder = {
   id: string;
@@ -72,14 +82,17 @@ export type Reminder = {
   contract_date_id: string;
   assignee_user_id: string | null;
   due_date: string;
-  lead_days: 90 | 30 | 7;
+  lead_days: ReminderLeadDays;
   status: ReminderStatus;
   created_at: string;
 };
 
 export type ReminderWithContract = Reminder & {
   contracts: Pick<Contract, "id" | "title"> | null;
-  contract_dates: Pick<ContractDate, "id" | "date_type" | "due_date"> | null;
+  contract_dates: Pick<
+    ContractDate,
+    "id" | "date_type" | "due_date" | "recurrence"
+  > | null;
 };
 
 export type DecisionType = "renew" | "renegotiate" | "end";

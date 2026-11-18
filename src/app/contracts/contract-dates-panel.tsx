@@ -6,6 +6,7 @@ import { formatDateNb } from "@/lib/dates";
 import type {
   ContractDate,
   ContractDateType,
+  DateRecurrence,
   DecisionType,
   DecisionWithActor,
 } from "@/lib/types";
@@ -52,6 +53,22 @@ export function ContractDatesPanel({
     return dictionary.contracts.decisions.end;
   };
 
+  const recurrenceLabel = (value: DateRecurrence | undefined) => {
+    switch (value) {
+      case "daily":
+        return dictionary.contracts.dates.daily;
+      case "weekly":
+        return dictionary.contracts.dates.weekly;
+      case "monthly":
+        return dictionary.contracts.dates.monthly;
+      case "yearly":
+        return dictionary.contracts.dates.yearly;
+      case "one_time":
+      default:
+        return dictionary.contracts.dates.oneTime;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <section className="rounded-2xl border border-teal-100 bg-white p-6 shadow-sm">
@@ -77,6 +94,9 @@ export function ContractDatesPanel({
                   <strong>{dateLabel(item.date_type as ContractDateType)}</strong>
                   {": "}
                   {formatDateNb(item.due_date)}
+                  <span className="mt-0.5 block text-xs text-slate-500">
+                    {recurrenceLabel(item.recurrence)}
+                  </span>
                 </span>
                 <form action={deleteContractDate}>
                   <input type="hidden" name="id" value={item.id} />
@@ -90,7 +110,7 @@ export function ContractDatesPanel({
           )}
         </ul>
 
-        <form action={dateAction} className="mt-4 grid gap-3 sm:grid-cols-3">
+        <form action={dateAction} className="mt-4 grid gap-3 sm:grid-cols-2">
           <input type="hidden" name="contract_id" value={contractId} />
           <select
             name="date_type"
@@ -107,10 +127,25 @@ export function ContractDatesPanel({
             required
             className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none ring-teal-600 focus:ring-2"
           />
+          <select
+            name="recurrence"
+            required
+            aria-label={dictionary.contracts.dates.recurrence}
+            defaultValue="one_time"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none ring-teal-600 focus:ring-2 sm:col-span-2"
+          >
+            <option value="one_time">
+              {dictionary.contracts.dates.oneTime}
+            </option>
+            <option value="daily">{dictionary.contracts.dates.daily}</option>
+            <option value="weekly">{dictionary.contracts.dates.weekly}</option>
+            <option value="monthly">{dictionary.contracts.dates.monthly}</option>
+            <option value="yearly">{dictionary.contracts.dates.yearly}</option>
+          </select>
           <button
             type="submit"
             disabled={datePending}
-            className="rounded-lg bg-teal-700 px-3 py-2 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-60"
+            className="rounded-lg bg-teal-700 px-3 py-2 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-60 sm:col-span-2"
           >
             {datePending
               ? dictionary.contracts.dates.saving
