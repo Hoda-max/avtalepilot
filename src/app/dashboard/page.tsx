@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
 import { requireProfile } from "@/lib/auth/profile";
 import { updateReminderStatus } from "@/app/contracts/date-actions";
-import { formatDateNb } from "@/lib/dates";
+import { addDaysIso, formatDateNb, todayIso } from "@/lib/dates";
 import { fillTemplate, getDictionary } from "@/i18n/get-dictionary";
 import { rollForwardRecurringDates } from "@/lib/reminders/sync-reminders";
 import { createClient } from "@/lib/supabase/server";
@@ -27,10 +27,8 @@ export default async function DashboardPage() {
     organizationId: profile.organization_id,
   });
 
-  const today = new Date().toISOString().slice(0, 10);
-  const horizon = new Date();
-  horizon.setUTCDate(horizon.getUTCDate() + 90);
-  const horizonIso = horizon.toISOString().slice(0, 10);
+  const today = todayIso();
+  const horizonIso = addDaysIso(today, 90);
 
   const [
     { count: contractCount },

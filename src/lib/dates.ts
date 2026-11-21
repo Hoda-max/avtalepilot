@@ -124,6 +124,12 @@ export function addDaysIso(isoDate: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
-export function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+/** Calendar date in Europe/Oslo (YYYY-MM-DD), not UTC. */
+export function todayIso(timeZone: string = "Europe/Oslo") {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
 }

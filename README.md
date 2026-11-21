@@ -18,10 +18,12 @@ npm install
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...your-anon-key...
+SUPABASE_SERVICE_ROLE_KEY=eyJ...your-service-role-key...
 ```
 
-Use the **Project URL** and the long **anon/public** key (`eyJ...`) from Supabase → Project Settings → API.  
-The URL must end with `.supabase.co` (nothing after it).
+Use the **Project URL**, the long **anon/public** key, and the **service_role** key from Supabase → Project Settings → API.  
+The URL must end with `.supabase.co` (nothing after it).  
+Never put `SUPABASE_SERVICE_ROLE_KEY` in client code or commit it.
 
 4. Run database setup in Supabase **SQL Editor** (in order):
 
@@ -29,6 +31,7 @@ The URL must end with `.supabase.co` (nothing after it).
 - `supabase/migrations/002_suppliers_contracts.sql`
 - `supabase/migrations/003_dates_reminders_decisions.sql`
 - `supabase/migrations/004_reminder_emails.sql`
+- `supabase/migrations/005_contract_date_recurrence.sql`
 
 5. Start the app:
 
@@ -52,10 +55,11 @@ This adds demo suppliers, contracts, dates, a reminder, and a decision.
 - One organization with admin/member roles
 - Suppliers and contracts (search + filters)
 - Upload contract PDF/image
-- Key dates + automatic reminders (90/30/7 days)
+- Key dates + recurrence (one-time / daily / weekly / monthly / yearly)
+- Automatic reminders (lead times depend on recurrence)
 - Decisions: renew / renegotiate / end
 - Dashboard of open reminders and upcoming deadlines
-- Email reminders via Resend (admin can send due emails from Settings)
+- Email reminders via Resend (manual from Settings + daily Vercel Cron)
 
 ## Email reminders (Resend)
 
@@ -67,24 +71,28 @@ This adds demo suppliers, contracts, dates, a reminder, and a decision.
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 RESEND_API_KEY=re_xxxxxxxxx
 EMAIL_FROM=AvtalePilot <onboarding@resend.dev>
+CRON_SECRET=change-me-to-a-long-random-string
 REMINDER_CRON_SECRET=change-me-to-a-long-random-string
+SUPABASE_SERVICE_ROLE_KEY=eyJ...your-service-role-key...
 ```
 
-4. Run `supabase/migrations/004_reminder_emails.sql` in Supabase
+4. Run `supabase/migrations/004_reminder_emails.sql` in Supabase (and `005` for recurrence)
 5. Restart `npm run dev`
 6. Make sure a reminder is due today (or use sample data)
 7. Go to **Settings** → **Send due reminders now**
 
 ### Automatic daily emails (Vercel Cron)
 
-After deploy, Vercel runs `/api/reminders/send` every day at **07:00 UTC** (`vercel.json`).
+After deploy, Vercel runs `/api/reminders/send` every day at **07:00 UTC** (`vercel.json`).  
+“Today” for due reminders uses **Europe/Oslo**.
 
-In Vercel → Project → Settings → Environment Variables, set:
+In Vercel → Project → **Environment Variables**, set:
 
-- `CRON_SECRET` = a long random string (Vercel Cron sends it as `Authorization: Bearer …`)
-- You can use the same value as `REMINDER_CRON_SECRET`
-
-Also set `NEXT_PUBLIC_APP_URL` to your real site URL, e.g. `https://your-app.vercel.app`.
+- `SUPABASE_SERVICE_ROLE_KEY` = Supabase **service_role** secret (required so cron can read reminders without a logged-in user)
+- `CRON_SECRET` = a long random string (Vercel Cron sends `Authorization: Bearer …`)
+- You can use the same value for `REMINDER_CRON_SECRET`
+- `NEXT_PUBLIC_APP_URL` = your live URL, e.g. `https://avtalepilot.vercel.app`
+- Plus Resend vars: `RESEND_API_KEY`, `EMAIL_FROM`
 
 Manual test after deploy:
 
@@ -100,10 +108,12 @@ curl -X GET "https://YOUR_DOMAIN/api/reminders/send" \
 3. In Vercel → Project → **Settings → Environment Variables**, add the same values as `.env.local`:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
    - `NEXT_PUBLIC_APP_URL` (your Vercel URL)
    - `RESEND_API_KEY`
    - `EMAIL_FROM`
-   - `REMINDER_CRON_SECRET`
+   - `CRON_SECRET`
+   - `REMINDER_CRON_SECRET` (optional if same as `CRON_SECRET`)
 4. Deploy
 5. In Supabase → **Authentication → URL configuration**, add your Vercel URL to:
    - Site URL (optional for password login)

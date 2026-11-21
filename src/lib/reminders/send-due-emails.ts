@@ -1,4 +1,6 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { todayIso } from "@/lib/dates";
 import { rollForwardRecurringDates } from "@/lib/reminders/sync-reminders";
 import { createClient } from "@/lib/supabase/server";
 import type { ContractDateType } from "@/lib/types";
@@ -26,25 +28,31 @@ type DueReminderRow = {
   profiles: { full_name: string | null; email: string | null } | null;
 };
 
-function dateTypeLabel(type: ContractDateType | undefined) {
+function dateTypeLabelNb(type: ContractDateType | undefined) {
   switch (type) {
     case "notice":
-      return "Notice deadline";
+      return "Oppsigelsesfrist";
     case "renewal":
-      return "Renewal";
+      return "Fornyelse";
     case "expiry":
-      return "Expiry";
+      return "Utløp";
     default:
-      return "Deadline";
+      return "Frist";
   }
 }
 
-function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 export async function sendDueReminderEmails(options?: {
   organizationId?: string;
+  /** Prefer service-role client for Vercel Cron (no user session / RLS). */
+  supabase?: SupabaseClient;
 }): Promise<SendDueEmailsResult> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM ?? "AvtalePilot <onboarding@resend.dev>";
@@ -65,7 +73,7 @@ export async function sendDueReminderEmails(options?: {
     };
   }
 
-  const supabase = await createClient();
+  const supabase = options?.supabase ?? (await createClient());
   const today = todayIso();
 
   let query = supabase
@@ -107,11 +115,12 @@ export async function sendDueReminderEmails(options?: {
 
   for (const reminder of reminders) {
     const email = reminder.profiles?.email?.trim();
-    const contractTitle =
-      reminder.contracts?.title ?? "Contract";
+    const contractTitle = reminder.contracts?.title ?? "Avtale";
     const contractId = reminder.contracts?.id;
-    const deadlineType = dateTypeLabel(reminder.contract_dates?.date_type);
+    const deadlineType = dateTypeLabelNb(reminder.contract_dates?.date_type);
     const deadlineDate = reminder.contract_dates?.due_date ?? reminder.due_date;
+    const safeTitle = escapeHtml(contractTitle);
+    const safeName = escapeHtml(reminder.profiles?.full_name?.trim() ?? "");
 
     if (!email) {
       skipped += 1;
@@ -127,25 +136,29 @@ export async function sendDueReminderEmails(options?: {
       ? `${appUrl}/contracts/${contractId}`
       : `${appUrl}/dashboard`;
 
-    const subject = `AvtalePilot reminder: ${contractTitle}`;
+    const subject = `AvtalePilot-påminnelse: ${contractTitle}`;
+    const leadLabel =
+      reminder.lead_days === 0
+        ? "samme dag"
+        : `${reminder.lead_days} dager før`;
     const html = `
       <div style="font-family:Segoe UI,Arial,sans-serif;line-height:1.5;color:#111827">
-        <p>Hello${reminder.profiles?.full_name ? ` ${reminder.profiles.full_name}` : ""},</p>
+        <p>Hei${safeName ? ` ${safeName}` : ""},</p>
         <p>
-          A contract deadline needs attention:
+          En avtale-frist trenger oppfølging:
         </p>
         <ul>
-          <li><strong>Contract:</strong> ${contractTitle}</li>
+          <li><strong>Avtale:</strong> ${safeTitle}</li>
           <li><strong>Type:</strong> ${deadlineType}</li>
-          <li><strong>Deadline:</strong> ${deadlineDate}</li>
-          <li><strong>Reminder:</strong> ${reminder.lead_days} days before</li>
+          <li><strong>Frist:</strong> ${escapeHtml(deadlineDate)}</li>
+          <li><strong>Påminnelse:</strong> ${leadLabel}</li>
         </ul>
         <p>
           <a href="${link}" style="display:inline-block;background:#0f766e;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none">
-            Open contract
+            Åpne avtale
           </a>
         </p>
-        <p style="color:#6b7280;font-size:12px">Sent by AvtalePilot</p>
+        <p style="color:#6b7280;font-size:12px">Sendt av AvtalePilot</p>
       </div>
     `;
 

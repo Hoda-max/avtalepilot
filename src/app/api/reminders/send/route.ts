@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendDueReminderEmails } from "@/lib/reminders/send-due-emails";
+import { createServiceClient } from "@/lib/supabase/admin";
 
 function isAuthorized(request: Request) {
   const cronSecret =
@@ -34,7 +35,18 @@ function isAuthorized(request: Request) {
 }
 
 async function handleSend() {
-  const result = await sendDueReminderEmails();
+  let supabase;
+  try {
+    supabase = createServiceClient();
+  } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : "SUPABASE_SERVICE_ROLE_KEY is not configured.";
+    return NextResponse.json({ ok: false, message }, { status: 503 });
+  }
+
+  const result = await sendDueReminderEmails({ supabase });
   return NextResponse.json(result, { status: result.ok ? 200 : 500 });
 }
 
