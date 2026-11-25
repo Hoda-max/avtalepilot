@@ -3,7 +3,8 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { requireProfile } from "@/lib/auth/profile";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { createClient } from "@/lib/supabase/server";
-import type { Profile } from "@/lib/types";
+import type { Invite, Profile } from "@/lib/types";
+import { PeoplePanel } from "./people-panel";
 import { ReminderEmailPanel } from "./reminder-email-panel";
 import { SettingsForms } from "./settings-forms";
 
@@ -15,13 +16,29 @@ export default async function SettingsPage() {
   const supabase = await createClient();
 
   let members: Pick<Profile, "id" | "full_name" | "email" | "role">[] = [];
+  let pendingInvites: Pick<
+    Invite,
+    "id" | "email" | "role" | "expires_at" | "created_at"
+  >[] = [];
+
   if (profile.role === "admin") {
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, full_name, email, role")
-      .eq("organization_id", profile.organization_id)
-      .order("full_name", { ascending: true });
-    members = data ?? [];
+    const [{ data: memberRows }, { data: inviteRows }] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("id, full_name, email, role")
+        .eq("organization_id", profile.organization_id)
+        .order("full_name", { ascending: true }),
+      supabase
+        .from("invites")
+        .select("id, email, role, expires_at, created_at")
+        .eq("organization_id", profile.organization_id)
+        .is("accepted_at", null)
+        .is("revoked_at", null)
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false }),
+    ]);
+    members = memberRows ?? [];
+    pendingInvites = inviteRows ?? [];
   }
 
   return (
@@ -49,9 +66,18 @@ export default async function SettingsPage() {
         </section>
 
         <div className="mt-6 space-y-6">
+          {profile.role === "admin" ? (
+            <PeoplePanel
+              currentUserId={user.id}
+              members={members}
+              pendingInvites={pendingInvites}
+              dictionary={dictionary}
+            />
+          ) : null}
           <SettingsForms
             profile={profile}
-            loginEmail={user.email ?? profile.email ?? ""}
+            loginEmail={user.email ?? ""}
+            reminderEmail={profile.email ?? user.email ?? ""}
             members={members}
             dictionary={dictionary}
           />

@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Profile, ProfileWithOrganization } from "@/lib/types";
 import {
@@ -20,6 +21,7 @@ type OrgMember = Pick<Profile, "id" | "full_name" | "email" | "role">;
 type SettingsFormsProps = {
   profile: ProfileWithOrganization;
   loginEmail: string;
+  reminderEmail: string;
   members: OrgMember[];
   dictionary: Dictionary;
 };
@@ -27,10 +29,12 @@ type SettingsFormsProps = {
 export function SettingsForms({
   profile,
   loginEmail,
+  reminderEmail,
   members,
   dictionary,
 }: SettingsFormsProps) {
   const t = dictionary.settings.account;
+  const router = useRouter();
   const [orgState, orgAction, orgPending] = useActionState(
     updateOrganizationName,
     initialState,
@@ -57,6 +61,17 @@ export function SettingsForms({
   );
 
   const otherMembers = members.filter((member) => member.id !== profile.id);
+
+  useEffect(() => {
+    if (loginState.message || reminderState.message || recoveryState.message) {
+      router.refresh();
+    }
+  }, [
+    loginState.message,
+    reminderState.message,
+    recoveryState.message,
+    router,
+  ]);
 
   return (
     <div className="space-y-6">
@@ -87,7 +102,7 @@ export function SettingsForms({
             <input
               type="email"
               name="reminder_email"
-              defaultValue={profile.email ?? loginEmail}
+              defaultValue={reminderEmail}
               required
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none ring-teal-600 focus:ring-2"
             />

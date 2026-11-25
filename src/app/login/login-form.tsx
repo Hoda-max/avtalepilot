@@ -8,9 +8,15 @@ const initialState: AuthState = {};
 
 type LoginFormProps = {
   dictionary: Dictionary;
+  nextPath?: string;
+  prefillEmail?: string;
 };
 
-export function LoginForm({ dictionary }: LoginFormProps) {
+export function LoginForm({
+  dictionary,
+  nextPath = "",
+  prefillEmail = "",
+}: LoginFormProps) {
   const [loginState, loginAction, loginPending] = useActionState(
     login,
     initialState,
@@ -35,12 +41,14 @@ export function LoginForm({ dictionary }: LoginFormProps) {
       <p className="mt-2 text-sm text-slate-600">{dictionary.login.subtitle}</p>
 
       <form className="mt-8 space-y-4">
+        {nextPath ? <input type="hidden" name="next" value={nextPath} /> : null}
         <label className="block text-sm font-medium text-slate-700">
           {dictionary.login.email}
           <input
             type="email"
             name="email"
             required
+            defaultValue={prefillEmail}
             autoComplete="email"
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none ring-teal-600 focus:ring-2"
           />

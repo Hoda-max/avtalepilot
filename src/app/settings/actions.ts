@@ -141,6 +141,11 @@ export async function updateLoginEmail(
     }
 
     await syncProfileEmail(user.id, email);
+
+    // Refresh the session so Settings shows the new login email immediately.
+    const supabase = await createClient();
+    await supabase.auth.refreshSession();
+
     revalidatePath("/settings");
     revalidatePath("/dashboard");
     return {

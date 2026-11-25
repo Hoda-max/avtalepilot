@@ -32,6 +32,7 @@ Never put `SUPABASE_SERVICE_ROLE_KEY` in client code or commit it.
 - `supabase/migrations/003_dates_reminders_decisions.sql`
 - `supabase/migrations/004_reminder_emails.sql`
 - `supabase/migrations/005_contract_date_recurrence.sql`
+- `supabase/migrations/006_invites.sql`
 
 5. Start the app:
 
@@ -53,6 +54,8 @@ This adds demo suppliers, contracts, dates, a reminder, and a decision.
 
 - Log in / create account
 - One organization with admin/member roles
+- Email invites (admin sends invite; new users join via link)
+- Role management in Settings (promote/demote; last-admin protected)
 - Suppliers and contracts (search + filters)
 - Upload contract PDF/image
 - Key dates + recurrence (one-time / daily / weekly / monthly / yearly)
@@ -60,6 +63,15 @@ This adds demo suppliers, contracts, dates, a reminder, and a decision.
 - Decisions: renew / renegotiate / end
 - Dashboard of open reminders and upcoming deadlines
 - Email reminders via Resend (manual from Settings + daily Vercel Cron)
+
+## Invites
+
+1. Run `supabase/migrations/006_invites.sql` in Supabase SQL Editor.
+2. Ensure `RESEND_API_KEY`, `EMAIL_FROM`, and `NEXT_PUBLIC_APP_URL` (or `APP_URL`) are set so invite emails include a working link.
+3. As an **admin**, open **Settings → People and roles**, enter an email + role, and send the invite.
+4. The invitee opens the link, signs up or logs in with that email, and accepts.
+
+After `006`, new signups no longer auto-join your org; they need an invite (except the very first user when the database has no organization).
 
 ## Email reminders (Resend)
 
@@ -76,7 +88,7 @@ REMINDER_CRON_SECRET=change-me-to-a-long-random-string
 SUPABASE_SERVICE_ROLE_KEY=eyJ...your-service-role-key...
 ```
 
-4. Run `supabase/migrations/004_reminder_emails.sql` in Supabase (and `005` for recurrence)
+4. Run `supabase/migrations/004_reminder_emails.sql` in Supabase (and `005` for recurrence, `006` for invites)
 5. Restart `npm run dev`
 6. Make sure a reminder is due today (or use sample data)
 7. Go to **Settings** → **Send due reminders now**

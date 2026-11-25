@@ -39,6 +39,7 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isAuthPage = path.startsWith("/login");
+  // /invite/* stays public; acceptance requires login inside the page.
   const isProtected =
     path.startsWith("/dashboard") ||
     path.startsWith("/settings") ||
@@ -53,8 +54,15 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user && isAuthPage) {
+    const next = request.nextUrl.searchParams.get("next");
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    if (next && next.startsWith("/invite/") && !next.includes("//")) {
+      url.pathname = next;
+      url.search = "";
+    } else {
+      url.pathname = "/dashboard";
+      url.search = "";
+    }
     return NextResponse.redirect(url);
   }
 

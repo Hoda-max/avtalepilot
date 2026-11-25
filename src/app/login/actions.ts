@@ -32,12 +32,21 @@ function friendlyAuthError(message: string | undefined, fallback: string) {
   return `${fallback} (${message})`;
 }
 
+function safeNextPath(value: string) {
+  const next = value.trim();
+  if (next.startsWith("/invite/") && !next.includes("//") && !next.includes("\\")) {
+    return next;
+  }
+  return "/dashboard";
+}
+
 export async function login(
   _prevState: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const next = safeNextPath(String(formData.get("next") ?? ""));
 
   if (!email || !password) {
     return { error: "Skriv inn e-post og passord." };
@@ -58,7 +67,7 @@ export async function login(
     };
   }
 
-  redirect("/dashboard");
+  redirect(next);
 }
 
 export async function signup(
@@ -67,6 +76,7 @@ export async function signup(
 ): Promise<AuthState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const next = safeNextPath(String(formData.get("next") ?? ""));
 
   if (!email || !password) {
     return { error: "Skriv inn e-post og passord." };
@@ -95,11 +105,13 @@ export async function signup(
   if (!data.session) {
     return {
       message:
-        "Kontoen er opprettet, men e-postbekreftelse er på i Supabase. Opprett brukeren med Auto Confirm i Supabase (Authentication → Users), eller slå av Confirm email.",
+        next.startsWith("/invite/")
+          ? "Kontoen er opprettet. Bekreft e-posten din, logg inn, og åpne invitasjonslenken på nytt."
+          : "Kontoen er opprettet, men e-postbekreftelse er på i Supabase. Opprett brukeren med Auto Confirm i Supabase (Authentication → Users), eller slå av Confirm email.",
     };
   }
 
-  redirect("/dashboard");
+  redirect(next);
 }
 
 export async function logout() {
