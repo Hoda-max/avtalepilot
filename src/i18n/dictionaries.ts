@@ -158,7 +158,7 @@ const nb = {
   },
   settings: {
     title: "Innstillinger",
-    subtitle: "Oppdater navnet ditt, organisasjonen og grensesnittspråk.",
+    subtitle: "Oppdater kontoen din, organisasjonen og grensesnittspråk.",
     profile: "Din profil",
     name: "Navn",
     saveName: "Lagre navn",
@@ -171,6 +171,35 @@ const nb = {
     languageHelp: "Velg språket for menyer, knapper og tekst i appen.",
     admin: "Administrator",
     member: "Medlem",
+    account: {
+      title: "Konto og e-post",
+      help: "Se innloggingsinformasjon, oppdater e-post for påminnelser, og endre passord.",
+      loginEmail: "Innloggings-e-post",
+      reminderEmail: "E-post for påminnelser",
+      reminderEmailHelp:
+        "Denne adressen mottar avtale-påminnelser. Kan være den samme som innlogging.",
+      saveReminderEmail: "Lagre påminnelses-e-post",
+      changeLoginEmail: "Endre innloggings-e-post",
+      newLoginEmail: "Ny innloggings-e-post",
+      saveLoginEmail: "Oppdater innloggings-e-post",
+      loginEmailAdminHelp:
+        "Som administrator oppdateres innloggings-e-posten med en gang (uten bekreftelseslenke).",
+      loginEmailMemberHelp:
+        "Du får en bekreftelseslenke på den nye adressen. Innloggingen endres først når du bekrefter.",
+      password: "Nytt passord",
+      confirmPassword: "Bekreft passord",
+      savePassword: "Endre passord",
+      passwordHelp: "Minst 6 tegn.",
+      recoveryTitle: "Gjenoppretting: mistet e-posttilgang",
+      recoveryHelp:
+        "Hvis et medlem ikke kommer inn på gammel e-post, kan en administrator sette ny innloggings-e-post etter å ha bekreftet identiteten (f.eks. personlig, telefon, eller organisasjons-ID).",
+      recoveryMember: "Medlem",
+      recoveryNewEmail: "Ny e-post",
+      recoveryReason: "Hvordan ble identiteten bekreftet?",
+      recoveryConfirm: "Jeg har bekreftet personens identitet",
+      recoverySave: "Sett ny innloggings-e-post",
+      noMembers: "Ingen andre medlemmer i organisasjonen ennå.",
+    },
     emails: {
       title: "E-postpåminnelser",
       help: "Send e-post for forfalte eller dagens åpne påminnelser til ansvarlig person.",
@@ -344,7 +373,7 @@ const en: typeof nb = {
   },
   settings: {
     title: "Settings",
-    subtitle: "Update your name, organization, and interface language.",
+    subtitle: "Update your account, organization, and interface language.",
     profile: "Your profile",
     name: "Name",
     saveName: "Save name",
@@ -357,6 +386,35 @@ const en: typeof nb = {
     languageHelp: "Choose the language for menus, buttons, and text in the app.",
     admin: "Administrator",
     member: "Member",
+    account: {
+      title: "Account and email",
+      help: "View login details, update reminder email, and change your password.",
+      loginEmail: "Login email",
+      reminderEmail: "Reminder email",
+      reminderEmailHelp:
+        "This address receives contract reminders. It can match your login email.",
+      saveReminderEmail: "Save reminder email",
+      changeLoginEmail: "Change login email",
+      newLoginEmail: "New login email",
+      saveLoginEmail: "Update login email",
+      loginEmailAdminHelp:
+        "As an administrator, your login email is updated immediately (no confirmation link).",
+      loginEmailMemberHelp:
+        "You will get a confirmation link at the new address. Login changes only after you confirm.",
+      password: "New password",
+      confirmPassword: "Confirm password",
+      savePassword: "Change password",
+      passwordHelp: "At least 6 characters.",
+      recoveryTitle: "Recovery: lost email access",
+      recoveryHelp:
+        "If a member cannot access their old email, an administrator can set a new login email after verifying their identity (in person, phone, or organization ID).",
+      recoveryMember: "Member",
+      recoveryNewEmail: "New email",
+      recoveryReason: "How was identity verified?",
+      recoveryConfirm: "I have verified this person’s identity",
+      recoverySave: "Set new login email",
+      noMembers: "No other members in the organization yet.",
+    },
     emails: {
       title: "Email reminders",
       help: "Send emails for due or today's open reminders to the contract owner.",
@@ -528,7 +586,7 @@ const ar: typeof nb = {
   },
   settings: {
     title: "الإعدادات",
-    subtitle: "حدّث اسمك والمؤسسة ولغة الواجهة.",
+    subtitle: "حدّث حسابك والمؤسسة ولغة الواجهة.",
     profile: "ملفك الشخصي",
     name: "الاسم",
     saveName: "حفظ الاسم",
@@ -541,6 +599,35 @@ const ar: typeof nb = {
     languageHelp: "اختر لغة القوائم والأزرار والنصوص في التطبيق.",
     admin: "مسؤول",
     member: "عضو",
+    account: {
+      title: "الحساب والبريد",
+      help: "اعرض بيانات تسجيل الدخول، وحدّث بريد التذكيرات، وغيّر كلمة المرور.",
+      loginEmail: "بريد تسجيل الدخول",
+      reminderEmail: "بريد التذكيرات",
+      reminderEmailHelp:
+        "يستلم هذا العنوان تذكيرات العقود. يمكن أن يطابق بريد تسجيل الدخول.",
+      saveReminderEmail: "حفظ بريد التذكيرات",
+      changeLoginEmail: "تغيير بريد تسجيل الدخول",
+      newLoginEmail: "بريد تسجيل الدخول الجديد",
+      saveLoginEmail: "تحديث بريد تسجيل الدخول",
+      loginEmailAdminHelp:
+        "بصفتك مسؤولاً، يُحدَّث بريد تسجيل الدخول فورًا (بدون رابط تأكيد).",
+      loginEmailMemberHelp:
+        "ستصلك رسالة تأكيد على العنوان الجديد. يتغيّر تسجيل الدخول بعد التأكيد فقط.",
+      password: "كلمة المرور الجديدة",
+      confirmPassword: "تأكيد كلمة المرور",
+      savePassword: "تغيير كلمة المرور",
+      passwordHelp: "6 أحرف على الأقل.",
+      recoveryTitle: "الاستعادة: فقدان الوصول إلى البريد",
+      recoveryHelp:
+        "إذا تعذّر على عضو الوصول إلى بريده القديم، يمكن للمسؤول تعيين بريد دخول جديد بعد التحقق من الهوية (شخصيًا أو هاتفيًا أو بهوية المؤسسة).",
+      recoveryMember: "العضو",
+      recoveryNewEmail: "البريد الجديد",
+      recoveryReason: "كيف تم التحقق من الهوية؟",
+      recoveryConfirm: "لقد تحققت من هوية هذا الشخص",
+      recoverySave: "تعيين بريد تسجيل دخول جديد",
+      noMembers: "لا يوجد أعضاء آخرون في المؤسسة بعد.",
+    },
     emails: {
       title: "تذكيرات البريد الإلكتروني",
       help: "أرسل رسائل للتذكيرات المستحقة أو الخاصة باليوم إلى مسؤول العقد.",

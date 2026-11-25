@@ -2,6 +2,8 @@ import { AppHeader } from "@/components/app-header";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { requireProfile } from "@/lib/auth/profile";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { createClient } from "@/lib/supabase/server";
+import type { Profile } from "@/lib/types";
 import { ReminderEmailPanel } from "./reminder-email-panel";
 import { SettingsForms } from "./settings-forms";
 
@@ -9,7 +11,18 @@ export const instant = false;
 
 export default async function SettingsPage() {
   const { locale, dictionary } = await getDictionary();
-  const { profile } = await requireProfile();
+  const { user, profile } = await requireProfile();
+  const supabase = await createClient();
+
+  let members: Pick<Profile, "id" | "full_name" | "email" | "role">[] = [];
+  if (profile.role === "admin") {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, full_name, email, role")
+      .eq("organization_id", profile.organization_id)
+      .order("full_name", { ascending: true });
+    members = data ?? [];
+  }
 
   return (
     <div className="flex min-h-full flex-col">
@@ -36,7 +49,12 @@ export default async function SettingsPage() {
         </section>
 
         <div className="mt-6 space-y-6">
-          <SettingsForms profile={profile} dictionary={dictionary} />
+          <SettingsForms
+            profile={profile}
+            loginEmail={user.email ?? profile.email ?? ""}
+            members={members}
+            dictionary={dictionary}
+          />
           <ReminderEmailPanel
             dictionary={dictionary}
             isAdmin={profile.role === "admin"}
