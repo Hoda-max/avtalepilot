@@ -10,6 +10,7 @@ import type { UserRole } from "@/lib/types";
 export type PeopleState = {
   error?: string;
   message?: string;
+  inviteUrl?: string;
 };
 
 function isValidEmail(value: string) {
@@ -96,6 +97,8 @@ export async function sendInvite(
   }
 
   const inviteUrl = `${appBaseUrl()}/invite/${invite.token}`;
+
+  // Email is optional: without a verified Resend domain, share the link yourself.
   const mail = await sendInviteEmail({
     to: email,
     organizationName: profile.organizations.name,
@@ -104,14 +107,18 @@ export async function sendInvite(
     invitedByName: profile.full_name,
   });
 
+  revalidatePath("/settings");
+
   if (!mail.ok) {
-    await supabase.from("invites").delete().eq("id", invite.id);
-    return { error: mail.message };
+    return {
+      message: `Invitasjon opprettet for ${email}. E-post ble ikke sendt — kopier lenken og del den selv (WhatsApp, SMS, osv.).`,
+      inviteUrl,
+    };
   }
 
-  revalidatePath("/settings");
   return {
-    message: `Invitasjon sendt til ${email}.`,
+    message: `Invitasjon sendt til ${email}. Du kan også kopiere lenken under.`,
+    inviteUrl,
   };
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Invite, Profile, UserRole } from "@/lib/types";
@@ -20,10 +20,15 @@ type PeoplePanelProps = {
   members: OrgMember[];
   pendingInvites: Pick<
     Invite,
-    "id" | "email" | "role" | "expires_at" | "created_at"
+    "id" | "email" | "role" | "token" | "expires_at" | "created_at"
   >[];
   dictionary: Dictionary;
 };
+
+function invitePath(token: string) {
+  if (typeof window === "undefined") return `/invite/${token}`;
+  return `${window.location.origin}/invite/${token}`;
+}
 
 export function PeoplePanel({
   currentUserId,
@@ -33,6 +38,7 @@ export function PeoplePanel({
 }: PeoplePanelProps) {
   const t = dictionary.settings.people;
   const router = useRouter();
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [inviteState, inviteAction, invitePending] = useActionState(
     sendInvite,
     initialState,
@@ -60,10 +66,21 @@ export function PeoplePanel({
   const roleLabel = (role: UserRole) =>
     role === "admin" ? dictionary.settings.admin : dictionary.settings.member;
 
+  async function copyLink(url: string, id: string) {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedId(id);
+      window.setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      window.prompt(t.copyFailed, url);
+    }
+  }
+
   return (
     <section className="rounded-2xl border border-teal-100 bg-white p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-slate-900">{t.title}</h2>
       <p className="mt-1 text-sm text-slate-600">{t.help}</p>
+      <p className="mt-2 text-xs text-slate-500">{t.linkHelp}</p>
 
       <form action={inviteAction} className="mt-6 space-y-3">
         <h3 className="text-sm font-semibold text-slate-900">{t.inviteTitle}</h3>
@@ -92,6 +109,21 @@ export function PeoplePanel({
         ) : null}
         {inviteState.message ? (
           <p className="text-sm text-teal-800">{inviteState.message}</p>
+        ) : null}
+        {inviteState.inviteUrl ? (
+          <div className="rounded-lg border border-teal-100 bg-teal-50 p-3">
+            <p className="text-xs font-medium text-teal-900">{t.inviteLink}</p>
+            <p className="mt-1 break-all text-xs text-teal-800">
+              {inviteState.inviteUrl}
+            </p>
+            <button
+              type="button"
+              onClick={() => copyLink(inviteState.inviteUrl!, "new")}
+              className="mt-2 rounded-lg bg-teal-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-800"
+            >
+              {copiedId === "new" ? t.copied : t.copyLink}
+            </button>
+          </div>
         ) : null}
         <button
           type="submit"
@@ -166,32 +198,44 @@ export function PeoplePanel({
           <p className="mt-3 text-sm text-slate-500">{t.noPending}</p>
         ) : (
           <ul className="mt-3 divide-y divide-slate-100">
-            {pendingInvites.map((invite) => (
-              <li
-                key={invite.id}
-                className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div>
-                  <p className="text-sm font-medium text-slate-900">
-                    {invite.email}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {roleLabel(invite.role)} · {t.expires}{" "}
-                    {new Date(invite.expires_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <form action={revokeAction}>
-                  <input type="hidden" name="invite_id" value={invite.id} />
-                  <button
-                    type="submit"
-                    disabled={revokePending}
-                    className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100 disabled:opacity-60"
-                  >
-                    {t.revoke}
-                  </button>
-                </form>
-              </li>
-            ))}
+            {pendingInvites.map((invite) => {
+              const url = invitePath(invite.token);
+              return (
+                <li
+                  key={invite.id}
+                  className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-900">
+                      {invite.email}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {roleLabel(invite.role)} · {t.expires}{" "}
+                      {new Date(invite.expires_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => copyLink(url, invite.id)}
+                      className="rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-900 hover:bg-teal-100"
+                    >
+                      {copiedId === invite.id ? t.copied : t.copyLink}
+                    </button>
+                    <form action={revokeAction}>
+                      <input type="hidden" name="invite_id" value={invite.id} />
+                      <button
+                        type="submit"
+                        disabled={revokePending}
+                        className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100 disabled:opacity-60"
+                      >
+                        {t.revoke}
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

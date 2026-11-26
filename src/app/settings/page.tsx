@@ -18,7 +18,7 @@ export default async function SettingsPage() {
   let members: Pick<Profile, "id" | "full_name" | "email" | "role">[] = [];
   let pendingInvites: Pick<
     Invite,
-    "id" | "email" | "role" | "expires_at" | "created_at"
+    "id" | "email" | "role" | "token" | "expires_at" | "created_at"
   >[] = [];
 
   if (profile.role === "admin") {
@@ -30,7 +30,7 @@ export default async function SettingsPage() {
         .order("full_name", { ascending: true }),
       supabase
         .from("invites")
-        .select("id, email, role, expires_at, created_at")
+        .select("id, email, role, token, expires_at, created_at")
         .eq("organization_id", profile.organization_id)
         .is("accepted_at", null)
         .is("revoked_at", null)
